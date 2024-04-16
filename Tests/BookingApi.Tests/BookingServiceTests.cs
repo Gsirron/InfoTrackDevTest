@@ -91,8 +91,9 @@ namespace BookingApi.Tests
         }
 
         [Theory]
-        [InlineData(10)]
-        public async Task CheckIfSettlementsAreFull_Will_Return_True_If_SettlementsGreaterThan_3(int intToTime)
+        [InlineData(10,0)]
+        [InlineData(10,9)]
+        public async Task CheckIfSettlementsAreFull_Will_Return_True_If_SettlementsGreaterThan_3(int hours, int minutes)
         {
             // Arrange
             using var context = new BookingContext(_options);
@@ -100,7 +101,7 @@ namespace BookingApi.Tests
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             await context.AddRangeAsync(
-                new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 0), Name = "Test" },
+                new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 15), Name = "Test" },
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 30), Name = "Test1" },
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 0), Name = "Test2" },
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 45), Name = "Test3" }
@@ -108,14 +109,43 @@ namespace BookingApi.Tests
             await context.SaveChangesAsync();
 
             var _bookingService = new BookingService(context);
-            var TimeToCheck = new TimeOnly(intToTime, 0);
+            var TimeToCheck = new TimeOnly(hours, minutes);
 
             // Act
             var result = await _bookingService.CheckIfSettlementsAreFullAsync(TimeToCheck);
             // Assert 
             Assert.True(result);
 
+        }
+        [Fact]
+        public async Task IfSettlementsAreFull_Throw_BookingTimesFullException()
+        {
+            // Arrange
+            using var context = new BookingContext(_options);
+
             context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+            await context.AddRangeAsync(
+                new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 15), Name = "Test" },
+                new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 30), Name = "Test1" },
+                new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 0), Name = "Test2" },
+                new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 45), Name = "Test3" }
+                );
+            await context.SaveChangesAsync();
+
+            var _bookingService = new BookingService(context);
+
+            var bookingDto = new BookingDto
+            {
+                Name = "Test",
+                BookingTime = "10:00"
+            };
+
+            // Act
+            Func<Task> act = () => _bookingService.CreateBookingAsync(bookingDto);
+            // Assert
+            BookingTimesFullException exception = await Assert.ThrowsAsync<BookingTimesFullException>(act);
+            Assert.Equal("Settlements are full for this time of 10:00", exception.Message);
 
         }
     }

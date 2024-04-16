@@ -16,6 +16,11 @@ namespace BookingApi.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Validates the Booking Details and then creates a new Booking if there less than 4 Bookings during that timeframe
+        /// <param name="string"></param>
+        /// <returns>Type of Booking</returns>
+        /// <exception cref="InvalidBookingDetailsException"></exception>
         public async Task<Booking> CreateBookingAsync(BookingDto newBooking)
         {
             if (string.IsNullOrEmpty(newBooking.Name) || string.IsNullOrEmpty(newBooking.BookingTime))
@@ -38,20 +43,36 @@ namespace BookingApi.Services
                 throw new InvalidBookingDetailsException("BookingTime must be between 09:00 to 16:00 hours");
             }
 
-            return null;
+            if (await CheckIfSettlementsAreFullAsync(bookingTime))
+            {
+                throw new BookingTimesFullException($"Settlements are full for this time of {bookingTime}");
+            }
+
+            // Map to Booking Entity
+            var booking = new Booking
+            {
+                BookingId = Guid.NewGuid(),
+                Name = newBooking.Name,
+                BookingTime = bookingTime
+            };
+
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
+            return booking;
 
         }
         /// <summary>
         /// Checks the Database for the number of bookings during a particular Timeframe
         /// Bookings are for 1 hour Spot is held from 9:00 to 9:59
         /// </summary>
-        /// <param name="bookingTime"></param>
-        /// <returns></returns>
+        /// <param name="bookingTime">The Inputted Booking Time as TimeOnly</param>
+        /// <returns>bool</returns>
         public async Task<bool> CheckIfSettlementsAreFullAsync(TimeOnly bookingTime)
         {
+            var end = bookingTime.AddMinutes(59);
             var CurrentSettlements = await _context.Bookings
-                .Where(b => b.BookingTime.IsBetween(bookingTime, bookingTime.AddMinutes(59)))
-                .CountAsync();
+                .CountAsync(b=> b.BookingTime.IsBetween(bookingTime,end) 
+                || b.BookingTime.AddMinutes(59).IsBetween(bookingTime,end));
 
             // If the Number of Bookings is greater than 3, then the Settlements are Full
             return CurrentSettlements > 3 ? true : false;
