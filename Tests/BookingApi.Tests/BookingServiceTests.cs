@@ -100,6 +100,7 @@ namespace BookingApi.Tests
 
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
+
             await context.AddRangeAsync(
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 15), Name = "Test" },
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 30), Name = "Test1" },
@@ -125,6 +126,7 @@ namespace BookingApi.Tests
 
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
+
             await context.AddRangeAsync(
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 15), Name = "Test" },
                 new Booking { BookingId = Guid.NewGuid(), BookingTime = new TimeOnly(10, 30), Name = "Test1" },
