@@ -68,5 +68,27 @@ namespace BookingApi.Tests
             InvalidBookingDetailsException exception = await Assert.ThrowsAsync<InvalidBookingDetailsException>(act);
             Assert.Equal("BookingTime must be in the format HH:mm", exception.Message);
         }
+
+        [Theory]
+        [InlineData("08:59")]
+        [InlineData("16:01")]
+        [InlineData("09:00")]
+        public async Task CreateBooking_WithTimeOutsideOfBuinessHours_ShouldReturn_BookingDetailsException(string timeString)
+        {
+            var _bookingService = new BookingService(new BookingContext(_options));
+            // Arrange
+            var bookingDto = new BookingDto
+            {
+                Name = "Test",
+                BookingTime = timeString
+            };
+
+            // Act
+            Func<Task> act = () => _bookingService.CreateBookingAsync(bookingDto);
+            // Assert
+            InvalidBookingDetailsException exception = await Assert.ThrowsAsync<InvalidBookingDetailsException>(act);
+            Assert.Equal("BookingTime must be between 09:00 to 16:00 hours", exception.Message);
+        }
+
     }
 }

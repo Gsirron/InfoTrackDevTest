@@ -33,7 +33,7 @@ namespace BookingApi.Services
             }
 
             // Checks if the BookingTime is Between 09:00 to 16:00
-            if (!bookingTime.IsBetween(new TimeOnly(8, 59), new TimeOnly(16, 01)))
+            if (!bookingTime.IsBetween(new TimeOnly(8,59), new TimeOnly(16, 01)))
             {
                 throw new InvalidBookingDetailsException("BookingTime must be between 09:00 to 16:00 hours");
             }
@@ -53,6 +53,7 @@ namespace BookingApi.Services
                 .Where(b => b.BookingTime.IsBetween(bookingTime, bookingTime.AddMinutes(59)))
                 .CountAsync();
 
+            // If the Number of Bookings is greater than 3, then the Settlements are Full
             return CurrentSettlements > 3 ? true : false;
         }
 
