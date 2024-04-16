@@ -1,12 +1,39 @@
 # InfoTrack BookingApi
 
+### Summary
+- Built using .NET 8
+- Uses EF Core In-Memory Database Provider
+- Tests using Xunit
 
+
+### Link to Repository
 [Link to Github Repository](https://github.com/Gsirron/InfoTrackDevTest/)
-### Api End Point
+
+### Instructions
+To start the API in the project folder
+
+ ```
+ dotnet run
+ ```
+To run the tests
+
+```
+dotnet test
+```
+
+
+
+
+### Api Endpoints
+
 ```Html
 https://localhost:7038/api/booking/create
+
 http://localhost:5242/api/booking/create
 ```
+
+
+
 
 #### Create New booking
 
@@ -27,6 +54,7 @@ http://localhost:5242/api/booking/create
 > | `200`         | `application/json`                  | `bookingId : {GUID}`                                |
 > | `400`         | `application/json`                | `{"status":"400","errors":{"Error Message"}}`                            |
 > | `409`         | `application/json`                | `"error": "Settlements are full for this time of {time}`                                                               |
+
 </details>
 
 ## Technical requirements
@@ -56,7 +84,7 @@ http://localhost:5242/api/booking/create
 - A link to your source control system containing your API code
 - Instructions on the endpoint to contact when we run your solution
 - Any additional details you feel are necessary to execute or understand your solution
-- Target 1-2 hours on this solutio
+- Target 1-2 hours on this solution
 
 ## License
 
