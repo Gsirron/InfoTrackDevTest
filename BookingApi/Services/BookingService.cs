@@ -56,8 +56,8 @@ namespace BookingApi.Services
                 BookingTime = bookingTime
             };
 
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
+            await _context.Bookings.AddAsync(booking);
+            var result = await _context.SaveChangesAsync();
             return booking;
 
         }
