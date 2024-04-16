@@ -1,6 +1,6 @@
 @BookingApi_HostAddress = http://localhost:5242
 
-GET {{BookingApi_HostAddress}}/weatherforecast/
+GET {{BookingApi_HostAddress}}/Booking/
 Accept: application/json
 
 ###
