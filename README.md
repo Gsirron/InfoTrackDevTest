@@ -10,7 +10,16 @@
 [Link to Github Repository](https://github.com/Gsirron/InfoTrackDevTest/)
 
 ### Instructions
-- In the 
+To start the API in the project folder
+
+ ```
+ dotnet run
+ ```
+To run the tests
+
+```
+dotnet test
+```
 
 
 
